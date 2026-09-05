@@ -37,14 +37,37 @@ import '../styles/global.css';
 				class="w-full bg-slate-900/70 border border-slate-700 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none rounded-xl p-4 text-center text-2xl font-mono tracking-[0.3em] text-white uppercase placeholder-slate-600 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
 				oninput="this.value = this.value.toUpperCase()"
 			/>
-			<button
-				type="submit"
-				id="calcBtn"
-				class="w-full mt-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-4 rounded-xl transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
-			>
-				<span>Calcular</span>
-				<span class="text-xs bg-cyan-600/50 px-2 py-1 rounded-md">ENTER ⏎</span>
-			</button>
+			<div class="mt-4 grid grid-cols-[auto_1fr] gap-3">
+				<button
+					type="button"
+					id="randomBtn"
+					title="Generar una matrícula aleatoria"
+					class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-4 rounded-xl transition-colors active:scale-[0.98] flex items-center"
+				>
+					<svg
+						class="w-6 h-6"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+						/>
+					</svg>
+				</button>
+				<button
+					type="submit"
+					id="calcBtn"
+					class="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-4 rounded-xl transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
+				>
+					<span>Calcular</span>
+					<span class="text-xs bg-cyan-600/50 px-2 py-1 rounded-md">ENTER ⏎</span>
+				</button>
+			</div>
 		</form>
 
 		<!-- Entrada por Cámara -->
@@ -137,6 +160,34 @@ import '../styles/global.css';
 		return totalSum;
 	}
 	window.calculatePlate = calculatePlate;
+
+	// ==========================================
+	// MATRÍCULA ALEATORIA (4 dígitos + 3 letras)
+	// Letras válidas en matrículas españolas (sin vocales, Ñ, Q)
+	// ==========================================
+
+	const SPANISH_PLATE_LETTERS = 'BCDFGHJKLMNPRSTVWXYZ';
+
+	function randomDigit() {
+		return Math.floor(Math.random() * 10);
+	}
+
+	function randomSpanishPlate() {
+		const digits = Array.from({ length: 4 }, randomDigit).join('');
+		let letters = '';
+		for (let i = 0; i < 3; i++) {
+			letters += SPANISH_PLATE_LETTERS.charAt(
+				Math.floor(Math.random() * SPANISH_PLATE_LETTERS.length),
+			);
+		}
+		return `${digits}${letters}`;
+	}
+
+	document.getElementById('randomBtn').addEventListener('click', () => {
+		const plate = randomSpanishPlate();
+		document.getElementById('plateInput').value = plate;
+		processPlate(plate); // recalcula automáticamente
+	});
 
 	// ==========================================
 	// INTERACCIÓN UI (DOM)
