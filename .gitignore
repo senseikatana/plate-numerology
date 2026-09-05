@@ -1,4 +1,5 @@
 node_modules
+dist
 .env*
 !.env.example
 *.log
@@ -6,3 +7,10 @@ node_modules
 .astro/
 .devin/
 .prisma/
+.netlify/
+.astro/
+
+
+# Local Netlify folder
+.netlify
+.vscode/

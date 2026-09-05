@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NumPlate | Calculadora Matrículas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #1e293b, #0f172a);
+      min-height: 100vh;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #06b6d4;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .glow-text {
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.6), 0 0 40px rgba(34, 211, 238, 0.4);
+    }
+  </style>
+</head>
+<body class="text-slate-200 flex items-center justify-center p-4">
+  <div class="w-full max-w-md mx-auto my-8">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-white tracking-tight">NumPlate</h1>
+      <p class="text-slate-400 text-sm mt-2">Calculadora numérica de matrículas</p>
+    </header>
+
+    <div class="glass rounded-3xl p-6 shadow-2xl">
+      <div class="flex justify-center gap-2 mb-6 bg-slate-800/50 p-1 rounded-xl">
+        <button id="tabManual" type="button" class="flex-1 py-2 rounded-lg text-sm font-medium transition-colors bg-cyan-500 text-white">Manual</button>
+        <button id="tabCamera" type="button" class="flex-1 py-2 rounded-lg text-sm font-medium transition-colors text-slate-400 hover:text-white">Foto</button>
+      </div>
+
+      <form id="manualSection">
+        <input
+          type="text"
+          id="plateInput"
+          maxlength="7"
+          placeholder="Ej: 9932AZG"
+          autocomplete="off"
+          class="w-full bg-slate-900/70 border border-slate-700 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none rounded-xl p-4 text-center text-2xl font-mono tracking-[0.3em] text-white uppercase placeholder-slate-600 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
+          oninput="this.value = this.value.toUpperCase()"
+        >
+        <button
+          type="submit"
+          id="calcBtn"
+          class="w-full mt-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-4 rounded-xl transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
+        >
+          <span>Calcular</span>
+          <span class="text-xs bg-cyan-600/50 px-2 py-1 rounded-md">ENTER ⏎</span>
+        </button>
+      </form>
+
+      <div id="cameraSection" class="hidden">
+        <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center bg-slate-900/40">
+          <svg class="w-12 h-12 mx-auto mb-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <p class="text-slate-400 mb-4 text-sm">Toma una foto clara de la matrícula</p>
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+          <button type="button" id="uploadBtn" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-colors">
+            Subir / Hacer Foto
+          </button>
+        </div>
+        <div id="loadingOcr" class="hidden flex-col items-center mt-6">
+          <div class="loader mb-3"></div>
+          <p class="text-cyan-400 text-sm animate-pulse">Leyendo matrícula...</p>
+        </div>
+        <img id="previewImg" class="hidden mt-4 rounded-xl max-h-40 mx-auto border border-slate-700" alt="Vista previa">
+      </div>
+    </div>
+
+    <div id="resultContainer" class="hidden mt-8 text-center glass rounded-3xl p-8 shadow-2xl">
+      <p class="text-slate-400 text-xs mb-4 uppercase tracking-[0.3em]">Tu Número Es</p>
+      <div class="text-9xl font-black text-cyan-400 my-4 glow-text" id="resultNumber">0</div>
+      <div class="mt-4 border-t border-slate-700/50 pt-4">
+        <p class="text-slate-500 text-sm font-mono" id="platePreview"></p>
+      </div>
+    </div>
+
+    <footer class="text-center mt-8 text-slate-600 text-xs">
+      Sistema Español (4 Números + 3 Letras)
+    </footer>
+  </div>
+
+  <script>
+    function calculatePlate(plate) {
+      const cleanPlate = plate.toUpperCase().trim();
+      if (cleanPlate.length !== 7) {
+        throw new Error("La matrícula debe tener exactamente 7 caracteres.");
+      }
+
+      const numbersArray = [cleanPlate.at(-7), cleanPlate.at(-6), cleanPlate.at(-5), cleanPlate.at(-4)];
+      const countOfNines = numbersArray.filter(n => n === '9').length;
+
+      const sumNumbers = (arr) => {
+        return arr.reduce((acc, curr) => {
+          const num = parseInt(curr, 10);
+          if (Number.isNaN(num)) {
+            throw new Error("Los primeros 4 caracteres deben ser números.");
+          }
+          if (num === 9) {
+            if (countOfNines > 1) return acc;
+            return acc + num;
+          }
+          return acc + num;
+        }, 0);
+      };
+
+      let totalSum = sumNumbers(numbersArray);
+      while (totalSum >= 10) {
+        totalSum = totalSum.toString().split('').reduce((acc, digit) => acc + parseInt(digit, 10), 0);
+      }
+      return totalSum;
+    }
+
+    function resetResult() {
+      const resultContainer = document.getElementById('resultContainer');
+      resultContainer.classList.add('hidden');
+      resultContainer.classList.remove('fade-in');
+    }
+
+    function processPlate(input) {
+      const resultContainer = document.getElementById('resultContainer');
+      const resultNumber = document.getElementById('resultNumber');
+      const platePreview = document.getElementById('platePreview');
+
+      try {
+        const plate = String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const number = calculatePlate(plate);
+        resultNumber.textContent = String(number);
+        platePreview.textContent = plate;
+        resultContainer.classList.remove('hidden');
+        resultContainer.classList.add('fade-in');
+      } catch (err) {
+        alert(err.message || 'No se pudo calcular la matrícula.');
+        resetResult();
+      }
+    }
+
+    function extractPlateCandidate(text) {
+      const compact = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const match = compact.match(/\d{4}[BCDFGHJKLMNPRSTVWXYZ]{3}/);
+      return match ? match[0] : null;
+    }
+
+    const manualSection = document.getElementById('manualSection');
+    const cameraSection = document.getElementById('cameraSection');
+    const tabManual = document.getElementById('tabManual');
+    const tabCamera = document.getElementById('tabCamera');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const cameraInput = document.getElementById('cameraInput');
+    const loadingOcr = document.getElementById('loadingOcr');
+    const previewImg = document.getElementById('previewImg');
+
+    tabManual.addEventListener('click', () => {
+      manualSection.classList.remove('hidden');
+      cameraSection.classList.add('hidden');
+      tabManual.classList.add('bg-cyan-500', 'text-white');
+      tabManual.classList.remove('text-slate-400');
+      tabCamera.classList.remove('bg-cyan-500', 'text-white');
+      tabCamera.classList.add('text-slate-400');
+      resetResult();
+    });
+
+    tabCamera.addEventListener('click', () => {
+      cameraSection.classList.remove('hidden');
+      manualSection.classList.add('hidden');
+      tabCamera.classList.add('bg-cyan-500', 'text-white');
+      tabCamera.classList.remove('text-slate-400');
+      tabManual.classList.remove('bg-cyan-500', 'text-white');
+      tabManual.classList.add('text-slate-400');
+      resetResult();
+    });
+
+    manualSection.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('plateInput').value;
+      processPlate(input);
+    });
+
+    uploadBtn.addEventListener('click', () => cameraInput.click());
+
+    cameraInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      previewImg.src = URL.createObjectURL(file);
+      previewImg.classList.remove('hidden');
+      loadingOcr.classList.remove('hidden');
+      loadingOcr.classList.add('flex');
+      resetResult();
+
+      try {
+        if (!window.Tesseract) {
+          throw new Error('Tesseract no está disponible. Revisa la conexión a la CDN.');
+        }
+        const { data } = await Tesseract.recognize(file, 'eng');
+        const plate = extractPlateCandidate(data.text || '');
+        if (!plate) {
+          throw new Error('No se detectó una matrícula española (4 números + 3 letras).');
+        }
+        document.getElementById('plateInput').value = plate;
+        processPlate(plate);
+      } catch (err) {
+        alert(err.message || 'Error al leer la imagen.');
+      } finally {
+        loadingOcr.classList.add('hidden');
+        loadingOcr.classList.remove('flex');
+        cameraInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>

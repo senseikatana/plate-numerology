@@ -1,21 +1,29 @@
 {
   "name": "plate-numerology",
-  "version": "0.0.1",
   "type": "module",
-  "packageManager": "nub@0.8.3",
-  "devEngines": {
-    "packageManager": {
-      "name": "nub",
-      "version": "^0.8.3",
-      "onFail": "ignore"
-    }
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
   },
   "scripts": {
-    "start": "nub index.ts"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "devDependencies": {
-    "@nubjs/types": ">=0.4.13 <=0.8.3",
-    "@types/node": "^26",
-    "typescript": "^7"
+  "dependencies": {
+    "@astrojs/markdoc": "^2.0.9",
+    "@astrojs/markdown-satteri": "^0.4.0",
+    "@astrojs/mdx": "^8.0.0",
+    "@astrojs/netlify": "^8.2.5",
+    "@astrojs/react": "^6.0.5",
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "astro": "^7.2.9",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3"
   }
 }

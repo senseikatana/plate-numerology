@@ -1,0 +1,67 @@
+@import "tailwindcss";
+       /* Estilos base y animaciones */
+        body {
+            background-color: #0f172a; /* Slate 900 */
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Fondo con gradiente sutil */
+        .bg-gradient {
+            background-image: radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 60%);
+        }
+
+        /* Estilo de la Matrícula (Canvas visual) */
+        .plate-canvas {
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+            border: 4px solid #1e293b;
+            border-radius: 12px;
+            box-shadow: 
+                inset 0 0 0 2px #fff, 
+                0 10px 25px -5px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eu-band {
+            background: linear-gradient(180deg, #1e3a8a 0%, #1d4ed8 100%);
+            width: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            border-right: 2px solid #1e293b;
+        }
+
+        /* Animación del resultado gigante */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-number {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Input styling */
+        input[type="text"] {
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        
+        /* Loader simple */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 3px solid #818cf8;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
