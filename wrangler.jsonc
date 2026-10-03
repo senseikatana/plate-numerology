@@ -10,7 +10,9 @@
 	},
 	"routes": [
 		{ "pattern": "senseikatana.com/numplate/*", "zone_name": "senseikatana.com" },
-		{ "pattern": "www.senseikatana.com/numplate/*", "zone_name": "senseikatana.com" }
+		{ "pattern": "senseikatana.com/numplate", "zone_name": "senseikatana.com" },
+		{ "pattern": "www.senseikatana.com/numplate/*", "zone_name": "senseikatana.com" },
+		{ "pattern": "www.senseikatana.com/numplate", "zone_name": "senseikatana.com" }
 	],
 	"observability": {
 		"enabled": true
