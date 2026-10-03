@@ -5,9 +5,13 @@
 	"name": "plate-numerology",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
-		"directory": "./dist",
+		"directory": "./dist/client",
 		"binding": "ASSETS"
 	},
+	"routes": [
+		{ "pattern": "senseikatana.com/numplate/*", "zone_name": "senseikatana.com" },
+		{ "pattern": "www.senseikatana.com/numplate/*", "zone_name": "senseikatana.com" }
+	],
 	"observability": {
 		"enabled": true
 	}

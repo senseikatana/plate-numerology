@@ -6,3 +6,5 @@ node_modules
 .astro/
 .devin/
 .prisma/
+dist/
+.wrangler/
