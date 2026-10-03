@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.5] - 2026-10-03
+
+### Changed
+- **astro.config.mjs**: update dependencies or build settings in 2 files
+
 ## [0.1.4] - 2026-10-03
 
 ### Fixed
