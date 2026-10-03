@@ -1,6 +1,6 @@
 {
   "name": "plate-numerology",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "packageManager": "nub@0.8.3",
   "devEngines": {
@@ -11,11 +11,20 @@
     }
   },
   "scripts": {
-    "start": "nub index.ts"
+    "start": "nub index.ts",
+    "dev": "bun run dev",
+    "build": "bun run build",
+    "test": "bun run test"
   },
   "devDependencies": {
     "@nubjs/types": ">=0.4.13 <=0.8.3",
-    "@types/node": "^26",
-    "typescript": "^7"
-  }
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.4",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite-tsconfig-paths": "^6.1.1"
+  },
+  "author": "senseikatana - Sergio Jurado",
+  "description": "Proyecto plate-numerology"
 }
