@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:pages": "STATIC_BUILD=1 ASTRO_BASE=/plate-numerology/ astro build",
     "preview": "wrangler dev --assets ./dist/client",
     "deploy": "astro build && wrangler deploy --assets ./dist/client",
     "typecheck": "tsc --noEmit"
